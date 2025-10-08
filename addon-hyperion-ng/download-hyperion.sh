@@ -181,9 +181,9 @@ main() {
     log "Hyperion Architecture: $hyperion_arch"
     
     # Construct download URL
-    local base_url="https://github.com/hyperion-project/hyperion.ng/releases/download"
+    local base_url="https://github.com/hyperion-project/hyperion.ng/releases/download/nightly"
     local filename="Hyperion-${version}-Linux-${hyperion_arch}.tar.gz"
-    local download_url="${base_url}/${version}/${filename}"
+    local download_url="${base_url}/${filename}"
     
     # Create temporary file
     local temp_file
