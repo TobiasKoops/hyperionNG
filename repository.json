@@ -1,5 +1,5 @@
 {
-  "name": "Jonathan's Home Assistant Add-Ons",
-  "url": "https://github.com/bradsjm/hassio-addons",
-  "maintainer": "Jonathan Bradshaw <jb@nrgup.net>"
+  "name": "Home assistant Plugin HyperionNG",
+  "url": "https://github.com/TobiasKoops/hyperionNG",
+  "maintainer": "Tobias Koops"
 }
