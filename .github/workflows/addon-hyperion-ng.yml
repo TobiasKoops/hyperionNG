@@ -9,11 +9,11 @@ on:
                 required: false
                 default: false
                 type: boolean
-            use_nightly:
-                description: "Use nightly builds"
+            specific_version:
+                description: "Specify a version to download"
                 required: false
-                default: false
-                type: boolean
+                default: ""
+                type: string
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -36,25 +36,25 @@ jobs:
             - name: Validate and get version info
               id: version
               env:
-                USE_NIGHTLY: ${{ github.event.inputs.use_nightly }}
+                SPECIFIC_VERSION: ${{ github.event.inputs.specific_version }}
               run: |
-                  # Skip the version check if nightly builds are requested
-                  if [ "${{ github.event.inputs.use_nightly }}" == "true" ]; then
-                    echo "Nightly builds requested, skipping version check."
-                    echo "version=nightly" >> $GITHUB_OUTPUT
-                    echo "release=nightly" >> $GITHUB_OUTPUT
+                  # Skip the version check if specific version is requested
+                  if [ "${{ github.event.inputs.specific_version }}" != "" ]; then
+                    echo "Specific version requested, skipping version check."
+                    echo "version=${{ github.event.inputs.specific_version }}" >> $GITHUB_OUTPUT
+                    echo "release=${{ github.event.inputs.specific_version }}" >> $GITHUB_OUTPUT
                     echo "should_build=true" >> $GITHUB_OUTPUT
-                    echo "VERSION=nightly" >> $GITHUB_ENV
-                    echo "LATEST_RELEASE=nightly" >> $GITHUB_ENV
+                    echo "VERSION=old" >> $GITHUB_ENV
+                    echo "LATEST_RELEASE=${{ github.event.inputs.specific_version }}" >> $GITHUB_ENV
 
                     # Set outputs first
                     echo "version=old" >> $GITHUB_OUTPUT
-                    echo "release=nightly" >> $GITHUB_OUTPUT
+                    echo "release=${{ github.event.inputs.specific_version }}" >> $GITHUB_OUTPUT
                     echo "should_build=true" >> $GITHUB_OUTPUT
 
                     # Set environment variables
                     echo "VERSION=old" >> $GITHUB_ENV
-                    echo "RELEASE=nightly" >> $GITHUB_ENV
+                    echo "RELEASE=${{ github.event.inputs.specific_version }}" >> $GITHUB_ENV
 
 
                   else
