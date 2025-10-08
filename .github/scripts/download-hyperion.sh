@@ -182,7 +182,7 @@ main() {
     
     # Construct download URL
     # example nightly: https://github.com/hyperion-project/hyperion.ng/releases/download/nightly/Hyperion-2.1.2-beta.1.nightly20251006-Linux-amd64.tar.gz
-    local base_url="https://github.com/hyperion-project/hyperion.ng/releases/download"
+    local base_url="https://github.com/hyperion-project/hyperion.ng/releases/download/nightly"
     local filename="Hyperion-${version}-Linux-${hyperion_arch}.tar.gz"
     local download_url="${base_url}/${version}/${filename}"
     
