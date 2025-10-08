@@ -35,6 +35,8 @@ jobs:
 
             - name: Validate and get version info
               id: version
+              env:
+                USE_NIGHTLY: ${{ github.event.inputs.use_nightly }}
               run: |
                   # Skip the version check if nightly builds are requested
                   if [ "${{ github.event.inputs.use_nightly }}" == "true" ]; then
