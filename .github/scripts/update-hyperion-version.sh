@@ -12,9 +12,14 @@ if [[ ! -f "$FILE" ]]; then
     exit 1
 fi
 
-# Get current version
+# Get current version, only if nightly is false
+if [[ "${{ github.event.inputs.use_nightly }}" != "true" ]]; then
 CURRENT="$(jq -r ".version" "$FILE")"
 echo "Current version: ${CURRENT}"
+else
+CURRENT="old"
+echo "Using nightly build, skipping version check"
+fi
 
 # Only write to GITHUB_ENV if it exists (GitHub Actions environment)
 if [[ -n "${GITHUB_ENV:-}" ]]; then
@@ -89,10 +94,15 @@ validate_release() {
     return 0
 }
 
-# Get latest release
-if ! RELEASE=$(get_latest_release); then
-    echo "ERROR: Could not determine latest release" >&2
-    exit 1
+# Get latest release if not using nightly
+if [[ "${{ github.event.inputs.use_nightly }}" == "true" ]]; then
+    if ! RELEASE=$(get_latest_release); then
+        echo "ERROR: Could not determine latest release" >&2
+        exit 1
+    fi
+else
+    RELEASE="nightly"
+    echo "Using nightly build as per input" >&2
 fi
 
 # Export release version

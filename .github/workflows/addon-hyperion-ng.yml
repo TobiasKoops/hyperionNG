@@ -10,7 +10,7 @@ on:
                 default: false
                 type: boolean
             use_nightly:
-                description: "Use nightly builds instead of stable releases"
+                description: "Use nightly builds"
                 required: false
                 default: false
                 type: boolean
