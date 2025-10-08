@@ -31,7 +31,7 @@
   "map": [
     "config:rw"
   ],
-  "image": "TobiasKoops/hyperion-ng-addon-{arch}",
+  "image": "TobiasKoops/hyperion-ng-addon-homeassistant/amd64-base-debian",
   "options": {},
   "schema": {},
   "privileged": [
