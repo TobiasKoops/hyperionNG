@@ -185,7 +185,7 @@ jobs:
                       - Enhanced architecture support and validation
 
                       ### Supported Architectures
-                      - amd64 (x86_64)
+                      - amd64 (amd64)
                       - armhf (armv7l)
                       - aarch64 (arm64)
 
