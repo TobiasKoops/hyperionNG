@@ -57,7 +57,7 @@ jobs:
                   echo "RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
 
                   # Only run update script if we need to build (and we're not in test mode)
-                  if [ "$SHOULD_BUILD" = "true" ] && [ "${{ github.event.inputs.test_mode }}" != "true" ]; then
+                  if [ "${{ github.event.inputs.test_mode }}" != "true" ]; then
                     echo "Running update script to prepare for build..."
                     chmod +x ./.github/scripts/update-hyperion-version.sh
                     ./.github/scripts/update-hyperion-version.sh
