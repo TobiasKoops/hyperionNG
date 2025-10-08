@@ -13,7 +13,7 @@ if [[ ! -f "$FILE" ]]; then
 fi
 
 # Get current version, only if nightly is false
-if [[ "${{ github.event.inputs.use_nightly }}" != "true" ]]; then
+if [[ "${USE_NIGHTLY:-false}" != "true" ]]; then
 CURRENT="$(jq -r ".version" "$FILE")"
 echo "Current version: ${CURRENT}"
 else
@@ -95,7 +95,7 @@ validate_release() {
 }
 
 # Get latest release if not using nightly
-if [[ "${{ github.event.inputs.use_nightly }}" == "true" ]]; then
+if [[ "${USE_NIGHTLY:-false}" == "true" ]]; then
     if ! RELEASE=$(get_latest_release); then
         echo "ERROR: Could not determine latest release" >&2
         exit 1
