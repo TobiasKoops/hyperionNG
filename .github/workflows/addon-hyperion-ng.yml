@@ -9,6 +9,11 @@ on:
                 required: false
                 default: false
                 type: boolean
+            use_nightly:
+                description: "Use nightly builds instead of stable releases"
+                required: false
+                default: false
+                type: boolean
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,30 +36,52 @@ jobs:
             - name: Validate and get version info
               id: version
               run: |
-                  # Get current version BEFORE any updates
-                  CURRENT_VERSION=$(jq -r '.version' addon-hyperion-ng/config.json)
-                  LATEST_RELEASE=$(curl -s --fail --connect-timeout 10 --max-time 30 "https://api.github.com/repos/hyperion-project/hyperion.ng/releases/latest" | jq -r '.tag_name // empty')
+                  # Skip the version check if nightly builds are requested
+                  if [ "${{ github.event.inputs.use_nightly }}" == "true" ]; then
+                    echo "Nightly builds requested, skipping version check."
+                    echo "version=nightly" >> $GITHUB_OUTPUT
+                    echo "release=nightly" >> $GITHUB_OUTPUT
+                    echo "should_build=true" >> $GITHUB_OUTPUT
+                    echo "VERSION=nightly" >> $GITHUB_ENV
+                    echo "LATEST_RELEASE=nightly" >> $GITHUB_ENV
 
-                  echo "Current version: $CURRENT_VERSION"
-                  echo "Latest release: $LATEST_RELEASE"
+                    # Set outputs first
+                    echo "version=old" >> $GITHUB_OUTPUT
+                    echo "release=nightly" >> $GITHUB_OUTPUT
+                    echo "should_build=true" >> $GITHUB_OUTPUT
 
-                  # Calculate should_build BEFORE updating anything
-                  if [ "$CURRENT_VERSION" != "$LATEST_RELEASE" ]; then
-                    SHOULD_BUILD="true"
+                    # Set environment variables
+                    echo "VERSION=old" >> $GITHUB_ENV
+                    echo "RELEASE=nightly" >> $GITHUB_ENV
+
+
                   else
-                    SHOULD_BUILD="false"
+
+                    # Get current version BEFORE any updates
+                    CURRENT_VERSION=$(jq -r '.version' addon-hyperion-ng/config.json)
+                    LATEST_RELEASE=$(curl -s --fail --connect-timeout 10 --max-time 30 "https://api.github.com/repos/hyperion-project/hyperion.ng/releases/latest" | jq -r '.tag_name // empty')
+
+                    echo "Current version: $CURRENT_VERSION"
+                    echo "Latest release: $LATEST_RELEASE"
+
+                    # Calculate should_build BEFORE updating anything
+                    if [ "$CURRENT_VERSION" != "$LATEST_RELEASE" ]; then
+                      SHOULD_BUILD="true"
+                    else
+                      SHOULD_BUILD="false"
+                    fi
+
+                    echo "Should build: $SHOULD_BUILD (current: $CURRENT_VERSION, latest: $LATEST_RELEASE)"
+
+                    # Set outputs first
+                    echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+                    echo "release=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+                    echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
+
+                    # Set environment variables
+                    echo "VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+                    echo "RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
                   fi
-
-                  echo "Should build: $SHOULD_BUILD (current: $CURRENT_VERSION, latest: $LATEST_RELEASE)"
-
-                  # Set outputs first
-                  echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-                  echo "release=$LATEST_RELEASE" >> $GITHUB_OUTPUT
-                  echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
-
-                  # Set environment variables
-                  echo "VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
-                  echo "RELEASE=$LATEST_RELEASE" >> $GITHUB_ENV
 
                   # Only run update script if we need to build (and we're not in test mode)
                   if [ "${{ github.event.inputs.test_mode }}" != "true" ]; then
@@ -64,7 +91,7 @@ jobs:
                   else
                     echo "Skipping config update (no build needed or in test mode)"
                   fi
-
+                  
     build:
         name: "Build Add-on"
         runs-on: ubuntu-latest
